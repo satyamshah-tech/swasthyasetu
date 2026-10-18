@@ -69,13 +69,13 @@
   <div class="panel-head"><div><div class="eyebrow">INTERACTIVE DEMO</div><h2 data-en="Change the situation. Watch the alerts respond." data-hi="स्थिति बदलें और अलर्ट में बदलाव देखें।">Change the situation. Watch the alerts respond.</h2></div><span class="pill blue-pill">Live interaction</span></div>
   <div class="controls-grid">
    <form action="{{ url_for('update') }}" method="post" class="edit-form">
-    <label>Health centre<select name="centre_id" id="centreSelect">{% for c in centres %}<option value="{{ c.id }}" data-patients="{{ c.patients }}" data-occupied="{{ c.occupied }}" data-present="{{ c.present }}" data-tests="{{ c.available_tests }}" data-para="{{ c.paracetamol }}" data-ors="{{ c.ors }}">{{ c.name }}</option>{% endfor %}</select></label>
-    <label>Patients today<input name="patients" id="patients" type="number" min="0" value="{{ centres[0].patients }}" required></label>
-    <label>Occupied beds<input name="occupied" id="occupied" type="number" min="0" value="{{ centres[0].occupied }}" required></label>
-    <label>Doctors present<input name="present" id="present" type="number" min="0" value="{{ centres[0].present }}" required></label>
-    <label>Tests available<input name="available_tests" id="tests" type="number" min="0" value="{{ centres[0].available_tests }}" required></label>
-    <label>Paracetamol units<input name="paracetamol" id="para" type="number" min="0" value="{{ centres[0].paracetamol }}" required></label>
-    <label>ORS units<input name="ors" id="ors" type="number" min="0" value="{{ centres[0].ors }}" required></label>
+    <label>Health centre<select name="centre_id" id="centreSelect">{% for c in centres %}<option value="{{ c.id }}" data-patients="{{ c.patients }}" data-occupied="{{ c.occupied }}" data-present="{{ c.present }}" data-tests="{{ c.available_tests }}" data-para="{{ c.paracetamol }}" data-ors="{{ c.ors }}" {% if c.id == selected_centre.id %}selected{% endif %}>{{ c.name }}</option>{% endfor %}</select></label>
+    <label>Patients today<input name="patients" id="patients" type="number" min="0" value="{{ selected_centre.patients }}" required></label>
+    <label>Occupied beds<input name="occupied" id="occupied" type="number" min="0" value="{{ selected_centre.occupied }}" required></label>
+    <label>Doctors present<input name="present" id="present" type="number" min="0" value="{{ selected_centre.present }}" required></label>
+    <label>Tests available<input name="available_tests" id="tests" type="number" min="0" value="{{ selected_centre.available_tests }}" required></label>
+    <label>Paracetamol units<input name="paracetamol" id="para" type="number" min="0" value="{{ selected_centre.paracetamol }}" required></label>
+    <label>ORS units<input name="ors" id="ors" type="number" min="0" value="{{ selected_centre.ors }}" required></label>
     <button type="submit" class="primary-btn">Update dashboard ↗</button>
    </form>
    <div class="scenario-box"><div class="scenario-icon">⚡</div><h3>Show a shortage scenario</h3><p>Simulate a sudden patient surge and medicine use at a selected centre. The dashboard will recalculate stock warnings and recommendations.</p>
