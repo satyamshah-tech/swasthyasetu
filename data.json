@@ -9,7 +9,7 @@
       "beds": 12,
       "occupied": 10,
       "doctors": 4,
-      "present": 4,
+      "present": 3,
       "tests": 8,
       "available_tests": 6,
       "paracetamol": 18,
@@ -55,15 +55,15 @@
       "name": "PHC Devgarh",
       "district": "Demo District",
       "type": "PHC",
-      "patients": 63,
+      "patients": 48,
       "beds": 10,
-      "occupied": 5,
+      "occupied": 3,
       "doctors": 3,
       "present": 2,
       "tests": 7,
       "available_tests": 5,
-      "paracetamol": 0,
-      "ors": 17,
+      "paracetamol": 9,
+      "ors": 22,
       "expiry_days": 65,
       "weekly": [
         35,
@@ -72,7 +72,7 @@
         44,
         46,
         45,
-        63
+        48
       ]
     },
     {
