@@ -1,0 +1,104 @@
+{
+  "centres": [
+    {
+      "id": 1,
+      "name": "PHC Sukhpur",
+      "district": "Demo District",
+      "type": "PHC",
+      "patients": 86,
+      "beds": 12,
+      "occupied": 10,
+      "doctors": 4,
+      "present": 4,
+      "tests": 8,
+      "available_tests": 6,
+      "paracetamol": 18,
+      "ors": 7,
+      "expiry_days": 22,
+      "weekly": [
+        54,
+        60,
+        63,
+        70,
+        72,
+        80,
+        86
+      ]
+    },
+    {
+      "id": 2,
+      "name": "CHC Rampur",
+      "district": "Demo District",
+      "type": "CHC",
+      "patients": 132,
+      "beds": 30,
+      "occupied": 18,
+      "doctors": 8,
+      "present": 7,
+      "tests": 12,
+      "available_tests": 11,
+      "paracetamol": 65,
+      "ors": 42,
+      "expiry_days": 120,
+      "weekly": [
+        94,
+        98,
+        104,
+        110,
+        115,
+        125,
+        132
+      ]
+    },
+    {
+      "id": 3,
+      "name": "PHC Devgarh",
+      "district": "Demo District",
+      "type": "PHC",
+      "patients": 63,
+      "beds": 10,
+      "occupied": 5,
+      "doctors": 3,
+      "present": 2,
+      "tests": 7,
+      "available_tests": 5,
+      "paracetamol": 0,
+      "ors": 17,
+      "expiry_days": 65,
+      "weekly": [
+        35,
+        39,
+        41,
+        44,
+        46,
+        45,
+        63
+      ]
+    },
+    {
+      "id": 4,
+      "name": "CHC Nandgaon",
+      "district": "Demo District",
+      "type": "CHC",
+      "patients": 101,
+      "beds": 24,
+      "occupied": 21,
+      "doctors": 6,
+      "present": 4,
+      "tests": 10,
+      "available_tests": 7,
+      "paracetamol": 34,
+      "ors": 12,
+      "expiry_days": 14,
+      "weekly": [
+        70,
+        73,
+        80,
+        84,
+        91,
+        95,
+        101
+      ]
+    }
+  ]
+}
