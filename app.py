@@ -64,8 +64,10 @@ def analyze(centres):
 @app.route("/")
 def dashboard():
  data=load_data(); centres=data["centres"]
+ requested_id=request.args.get("centre_id",type=int)
+ selected_centre=next((c for c in centres if c["id"]==requested_id),centres[0])
  alerts,forecasts,risks,transfers=analyze(centres)
- return render_template("index.html",centres=centres,alerts=alerts,forecasts=forecasts,risks=risks,transfers=transfers,
+ return render_template("index.html",centres=centres,selected_centre=selected_centre,alerts=alerts,forecasts=forecasts,risks=risks,transfers=transfers,
   total_patients=sum(c["patients"] for c in centres),free_beds=sum(c["beds"]-c["occupied"] for c in centres),
   total_doctors=sum(c["doctors"] for c in centres),present_doctors=sum(c["present"] for c in centres),
   today=date.today().strftime("%d %b %Y"))
@@ -73,8 +75,9 @@ def dashboard():
 @app.post("/update")
 def update():
  data=load_data()
+ centre_id=request.form.get("centre_id",type=int)
  try:
-  c=next(c for c in data["centres"] if c["id"]==int(request.form.get("centre_id","0")))
+  c=next(c for c in data["centres"] if c["id"]==centre_id)
   c["patients"]=max(0,int(request.form["patients"]))
   c["occupied"]=min(c["beds"],max(0,int(request.form["occupied"])))
   c["present"]=min(c["doctors"],max(0,int(request.form["present"])))
@@ -83,9 +86,10 @@ def update():
   c["ors"]=max(0,int(request.form["ors"]))
   c["weekly"][-1]=c["patients"]
   save_data(data); flash("Centre updated. Alerts and insights recalculated.","success")
- except (ValueError,KeyError,StopIteration):
-  flash("Please check the entered values and try again.","error")
- return redirect(url_for("dashboard"))
+ except (ValueError,KeyError,StopIteration,OSError) as exc:
+  app.logger.exception("Dashboard update failed: %s", exc)
+  flash("Update failed. Please check the values and try again.","error")
+ return redirect(url_for("dashboard",centre_id=centre_id or 1))
 
 @app.post("/simulate")
 def simulate():
