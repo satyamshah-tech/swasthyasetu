@@ -26,10 +26,16 @@ Python 3.10+ recommended.
 6. Run `python app.py`
 7. Open `http://127.0.0.1:8080`
 
-## Deploy to Cloud Run
-Install and configure Google Cloud CLI, select a Google Cloud project, enable billing and required APIs, then from this directory run:
-`gcloud run deploy swasthyasetu --source .`
-Review billing and access settings. Use synthetic data only in this demo.
+## Deploy to Render
+This repository is currently configured for a Render Web Service.
+
+1. Create a new **Web Service** connected to this GitHub repository.
+2. Build command: `pip install -r requirements.txt`
+3. Start command: `gunicorn app:app`
+4. Deploy, then open the service URL. Check `/health` for a basic status response.
+
+### Demo data persistence
+The prototype reads and writes `data.json` on the service's local filesystem. Local files may not survive a restart or redeploy, and they are not shared as a database across multiple instances. Use a managed database or host-supported persistent storage if demo changes must be retained reliably. Keep synthetic data only; do not enter real patient information.
 
 ## Suggested judge pitch
 "SwasthyaSetu helps district health teams spot shortages earlier by putting medicine inventory, bed pressure, doctor attendance and diagnostics in one operational view. The prototype raises transparent threshold-based alerts, shows a simple demand trend and proposes a stock transfer for staff review. Today it uses synthetic data; the next phase would connect approved facility data sources, validate forecasts on historical records, and add secure role-based workflows."
