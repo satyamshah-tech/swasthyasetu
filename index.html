@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SwasthyaSetu | District Health Intelligence</title>
+<link rel="stylesheet" href="{{ url_for('static',filename='style.css') }}">
+</head>
+<body>
+<header class="topbar">
+ <div class="brand"><div class="logo">✚</div><div><b>SwasthyaSetu</b><small data-en="District Health Intelligence" data-hi="जिला स्वास्थ्य प्रबंधन">District Health Intelligence</small></div></div>
+ <div class="top-actions"><span class="status-dot"></span><span data-en="DEMO ENVIRONMENT" data-hi="डेमो वातावरण">DEMO ENVIRONMENT</span><button class="lang" id="langBtn" type="button">हिंदी</button><span class="date">{{ today }}</span></div>
+</header>
+<main class="wrap">
+ <section class="hero">
+  <div class="hero-copy"><div class="eyebrow" data-en="ONE DISTRICT · ONE LIVE PICTURE" data-hi="एक जिला · एक स्पष्ट तस्वीर">ONE DISTRICT · ONE LIVE PICTURE</div>
+   <h1 data-en="Spot shortages before they become crises." data-hi="कमी को संकट बनने से पहले पहचानें।">Spot shortages before they become crises.</h1>
+   <p data-en="A decision-support dashboard connecting medicine stock, patient load, beds, doctors and diagnostics across PHCs & CHCs." data-hi="PHC और CHC में दवाओं, मरीजों, बेड, डॉक्टरों और जांच की उपलब्धता का एकीकृत डैशबोर्ड।">A decision-support dashboard connecting medicine stock, patient load, beds, doctors and diagnostics across PHCs & CHCs.</p>
+   <div class="hero-points"><span>✓ Early warnings</span><span>✓ Demand trend</span><span>✓ Transfer suggestions</span></div>
+  </div>
+  <div class="hero-visual"><div class="ring ring1"></div><div class="ring ring2"></div><div class="pulse-card"><span>✚</span><b>Care, connected.</b><small>PHC + CHC network</small></div><i class="bubble b1"></i><i class="bubble b2"></i></div>
+ </section>
+ {% with messages=get_flashed_messages(with_categories=true) %}{% if messages %}{% for category,message in messages %}<div class="notice {{ category }}">{{ message }}</div>{% endfor %}{% endif %}{% endwith %}
+ <section class="kpis">
+  <article class="kpi"><div class="kpi-label"><span data-en="Patients today" data-hi="आज के मरीज">Patients today</span><span class="ico blue">♙</span></div><strong>{{ total_patients }}</strong><small data-en="Across 4 sample facilities" data-hi="4 डेमो स्वास्थ्य केंद्रों में">Across 4 sample facilities</small><div class="spark"><i style="height:25%"></i><i style="height:40%"></i><i style="height:35%"></i><i style="height:55%"></i><i style="height:48%"></i><i style="height:72%"></i><i style="height:90%"></i></div></article>
+  <article class="kpi"><div class="kpi-label"><span data-en="Beds available" data-hi="उपलब्ध बेड">Beds available</span><span class="ico green">▤</span></div><strong>{{ free_beds }}</strong><small data-en="Unoccupied beds across network" data-hi="सभी केंद्रों में खाली बेड">Unoccupied beds across network</small><div class="metric-line"><span style="width:64%;background:#27b68a"></span></div><small>Network capacity visibility</small></article>
+  <article class="kpi"><div class="kpi-label"><span data-en="Doctor attendance" data-hi="डॉक्टर उपस्थिति">Doctor attendance</span><span class="ico purple">✚</span></div><strong>{{ ((present_doctors / total_doctors * 100)|round|int) if total_doctors else 0 }}<em>%</em></strong><small>{{ present_doctors }} / {{ total_doctors }} doctors marked present</small><div class="metric-line"><span style="width:{{ ((present_doctors / total_doctors * 100)|round|int) if total_doctors else 0 }}%;background:#8870ee"></span></div></article>
+  <article class="kpi"><div class="kpi-label"><span data-en="Priority alerts" data-hi="प्राथमिक अलर्ट">Priority alerts</span><span class="ico orange">⚑</span></div><strong>{{ alerts|length }}</strong><small data-en="Across stock, beds, staff & tests" data-hi="स्टॉक, बेड, स्टाफ और जांच">Across stock, beds, staff & tests</small><div class="alert-chips"><span>{{ alerts|selectattr('level','equalto','critical')|list|length }} critical</span><span>{{ alerts|selectattr('level','equalto','warning')|list|length }} warnings</span></div></article>
+ </section>
+
+ <div class="section-heading"><div><div class="eyebrow">FACILITY NETWORK</div><h2 data-en="Health centre overview" data-hi="स्वास्थ्य केंद्र का विवरण">Health centre overview</h2></div><div class="heading-right"><input id="search" placeholder="Search centre..." aria-label="Search centre"><span class="sample-label">● Synthetic sample data</span></div></div>
+ <section class="facility-grid" id="facilityGrid">
+ {% for c in centres %}
+ {% set occ=(c.occupied/c.beds*100)|round|int %}{% set att=(c.present/c.doctors*100)|round|int %}
+ <article class="facility" data-name="{{ c.name|lower }}">
+  <div class="facility-top"><div class="facility-symbol">{{ 'CHC' if c.type=='CHC' else 'PHC' }}</div><div class="facility-title"><h3>{{ c.name }}</h3><small>{{ c.type }} · {{ c.district }}</small></div><span class="health-dot {{ 'orange-dot' if occ>=80 or att<75 else '' }}"></span></div>
+  <div class="facility-metrics"><div><small>Patients</small><b>{{ c.patients }}</b></div><div><small>Free beds</small><b>{{ c.beds-c.occupied }}<i>/{{ c.beds }}</i></b></div><div><small>Doctors</small><b>{{ c.present }}<i>/{{ c.doctors }}</i></b></div></div>
+  <div class="progress-label"><span>Bed occupancy</span><b>{{ occ }}%</b></div><div class="progress"><span class="{{ 'warm' if occ>=80 else '' }}" style="width:{{ occ }}%"></span></div>
+  <div class="progress-label"><span>Doctor attendance</span><b>{{ att }}%</b></div><div class="progress"><span class="greenbar" style="width:{{ att }}%"></span></div>
+  <div class="stock-footer"><span>💊 Paracetamol <b>{{ c.paracetamol }}</b></span><span>ORS <b>{{ c.ors }}</b></span><span>Tests <b>{{ c.available_tests }}/{{ c.tests }}</b></span></div>
+ </article>
+ {% endfor %}
+ </section>
+
+ <section class="insight-grid">
+  <article class="panel">
+   <div class="panel-head"><div><div class="eyebrow">DEMAND INTELLIGENCE</div><h2 data-en="Patient load: trend & forecast" data-hi="मरीजों की संख्या: ट्रेंड और अनुमान">Patient load: trend & forecast</h2></div><span class="pill violet">7-day signal</span></div>
+   <p class="sub" data-en="Transparent trend extrapolation from sample weekly counts. Forecasts are indicative, not a trained ML model." data-hi="सैंपल साप्ताहिक डेटा से पारदर्शी अनुमान। यह प्रशिक्षित ML मॉडल नहीं है।">Transparent trend extrapolation from sample weekly counts. Forecasts are indicative, not a trained ML model.</p>
+   <div class="chart" aria-label="Patient trend bars">{% for f in forecasts %}<div class="chart-col"><div class="chart-value">{{ f.today }}</div><div class="chart-bar-wrap"><div class="chart-bar" style="height:{{ [f.today/150*100,100]|min }}%"></div></div><small>{{ f.name|replace('PHC ','')|replace('CHC ','') }}</small><b class="{{ 'up' if f.delta>0 else 'flat' }}">{{ '+' if f.delta>0 else '' }}{{ f.delta }}<span> forecast</span></b></div>{% endfor %}</div>
+   <div class="chart-legend"><span><i></i> Current patients</span><span>Forecast = recent trend extrapolation</span></div>
+  </article>
+  <article class="panel">
+   <div class="panel-head"><div><div class="eyebrow">ATTENTION REQUIRED</div><h2 data-en="Priority alert queue" data-hi="प्राथमिक अलर्ट सूची">Priority alert queue</h2></div><span class="pill orange-pill">{{ alerts|length }} alerts</span></div>
+   <div class="alert-list">
+   {% for a in alerts[:7] %}<div class="alert-item"><span class="alert-icon {{ a.level }}">{{ '!' if a.level in ['critical','warning'] else 'i' }}</span><div class="alert-copy"><b>{{ a.title }}</b><small>{{ a.detail }}</small></div><span class="alert-type">{{ a.kind }}</span></div>{% endfor %}
+   {% if not alerts %}<p class="sub">No active alerts in this scenario.</p>{% endif %}
+   </div>
+   {% if alerts|length>7 %}<div class="more-alerts">+ {{ alerts|length-7 }} additional alerts included in the dashboard count</div>{% endif %}
+  </article>
+ </section>
+
+ <section class="panel">
+  <div class="panel-head"><div><div class="eyebrow">DISTRICT RESOURCE COORDINATION</div><h2 data-en="Suggested stock redistribution" data-hi="स्टॉक पुनर्वितरण सुझाव">Suggested stock redistribution</h2></div><span class="pill green-pill">Human-reviewed action</span></div>
+  {% if transfers %}{% for t in transfers %}<div class="transfer-card"><div class="transfer-icon">⇄</div><div class="transfer-main"><b>Move {{ t.qty }} units of {{ t.item }}</b><p>{{ t.why }}</p><div class="route"><span>{{ t['from'] }}</span><strong>→</strong><span>{{ t.to }}</span></div></div><span class="review-tag">REVIEW FIRST</span></div>{% endfor %}
+  {% else %}<p class="sub">No transfer proposal meets the demo thresholds right now.</p>{% endif %}
+  <p class="disclaimer">This is a rule-based suggestion from synthetic data, not an automatic order. Staff must verify demand, expiry, transport and clinical protocols before any real transfer.</p>
+ </section>
+
+ <section class="panel controls-panel">
+  <div class="panel-head"><div><div class="eyebrow">INTERACTIVE DEMO</div><h2 data-en="Change the situation. Watch the alerts respond." data-hi="स्थिति बदलें और अलर्ट में बदलाव देखें।">Change the situation. Watch the alerts respond.</h2></div><span class="pill blue-pill">Live interaction</span></div>
+  <div class="controls-grid">
+   <form action="{{ url_for('update') }}" method="post" class="edit-form">
+    <label>Health centre<select name="centre_id" id="centreSelect">{% for c in centres %}<option value="{{ c.id }}" data-patients="{{ c.patients }}" data-occupied="{{ c.occupied }}" data-present="{{ c.present }}" data-tests="{{ c.available_tests }}" data-para="{{ c.paracetamol }}" data-ors="{{ c.ors }}">{{ c.name }}</option>{% endfor %}</select></label>
+    <label>Patients today<input name="patients" id="patients" type="number" min="0" value="{{ centres[0].patients }}" required></label>
+    <label>Occupied beds<input name="occupied" id="occupied" type="number" min="0" value="{{ centres[0].occupied }}" required></label>
+    <label>Doctors present<input name="present" id="present" type="number" min="0" value="{{ centres[0].present }}" required></label>
+    <label>Tests available<input name="available_tests" id="tests" type="number" min="0" value="{{ centres[0].available_tests }}" required></label>
+    <label>Paracetamol units<input name="paracetamol" id="para" type="number" min="0" value="{{ centres[0].paracetamol }}" required></label>
+    <label>ORS units<input name="ors" id="ors" type="number" min="0" value="{{ centres[0].ors }}" required></label>
+    <button type="submit" class="primary-btn">Update dashboard ↗</button>
+   </form>
+   <div class="scenario-box"><div class="scenario-icon">⚡</div><h3>Show a shortage scenario</h3><p>Simulate a sudden patient surge and medicine use at a selected centre. The dashboard will recalculate stock warnings and recommendations.</p>
+    <form action="{{ url_for('simulate') }}" method="post"><label>Choose centre<select name="centre_id">{% for c in centres %}<option value="{{ c.id }}">{{ c.name }}</option>{% endfor %}</select></label><button class="scenario-btn" type="submit">Run crisis simulation →</button></form>
+    <form action="{{ url_for('reset') }}" method="post"><button type="submit" class="reset-btn">Reset demo data</button></form>
+   </div>
+  </div>
+ </section>
+ <section class="method-note"><div class="method-icon">i</div><div><b>Built for responsible decision support</b><p>All facility values are synthetic. Stock, attendance, bed and test alerts use transparent thresholds. Demand forecasting uses simple trend extrapolation. No real patient records are collected; this prototype is not a medical device and should not be used for clinical decisions.</p></div></section>
+ <footer><b>✚ SwasthyaSetu</b><span>Hackathon prototype · Synthetic data only</span><span>Designed for earlier intervention, not automated clinical decisions</span></footer>
+</main>
+<script>
+const select = document.getElementById('centreSelect');
+function syncInputs(){const o=select.options[select.selectedIndex];document.getElementById('patients').value=o.dataset.patients;document.getElementById('occupied').value=o.dataset.occupied;document.getElementById('present').value=o.dataset.present;document.getElementById('tests').value=o.dataset.tests;document.getElementById('para').value=o.dataset.para;document.getElementById('ors').value=o.dataset.ors;}
+select.addEventListener('change',syncInputs);
+document.getElementById('search').addEventListener('input',e=>{const q=e.target.value.toLowerCase();document.querySelectorAll('.facility').forEach(card=>card.style.display=card.dataset.name.includes(q)?'':'none')});
+let hindi=false;document.getElementById('langBtn').addEventListener('click',()=>{hindi=!hindi;document.documentElement.lang=hindi?'hi':'en';document.querySelectorAll('[data-en][data-hi]').forEach(el=>el.textContent=hindi?el.dataset.hi:el.dataset.en);document.getElementById('langBtn').textContent=hindi?'English':'हिंदी';});
+</script>
+</body></html>
